@@ -7,6 +7,36 @@ SvelteKit 3 / TanStack Start 1.0 / Next.js 16.4 で同じ EC カタログアプ�
 - Lambda Web Functions で計測する手順: [LWF-RUN.md](LWF-RUN.md)
 - Lambda Web Functions 用の CDK L2: [reeschan/cdk-lambda-web](https://github.com/reeschan/cdk-lambda-web)
 
+## 画面
+
+| 商品一覧 | 商品詳細 |
+|---|---|
+| ![商品一覧](docs/img/07-screen-list.png) | ![商品詳細](docs/img/08-screen-detail.png) |
+
+## アーキテクチャ
+
+### アプリ
+
+5 つのアプリは同じ仕様・同じ CSS で実装し、データはすべて共通のモック API（data-api）から取ります。
+
+![アプリ構成](docs/img/01-app.png)
+
+商品詳細ページは、遅いおすすめ API を最初に呼び出し、商品と在庫を並列で待って殻を先に返し、おすすめを後からストリーミングします。
+
+![商品詳細ページの流れ](docs/img/02-streaming.png)
+
+### 計測環境：Node コンテナ
+
+![Node コンテナでの計測環境](docs/img/03-node.png)
+
+### 計測環境：AWS Lambda Web Functions
+
+![Lambda Web Functions での計測環境](docs/img/04-lambda.png)
+
+CDK の L2 は自作の [cdk-lambda-web](https://github.com/reeschan/cdk-lambda-web) を使っています。
+
+![cdk-lambda-web が作るリソース](docs/img/05-cdk-l2.png)
+
 ## 構成
 
 ```
