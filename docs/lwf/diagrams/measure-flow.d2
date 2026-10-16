@@ -1,0 +1,70 @@
+# 計測とコスト算出のデータの流れ
+# 生成: python ~/.claude/skills/arch-diagram/versions/v1.1/scripts/render.py docs/now-post/diagrams/measure-flow.d2
+direction: right
+
+vars: {
+  d2-config: {
+    layout-engine: elk
+    pad: 40
+  }
+}
+
+classes: {
+  svc: {
+    shape: rectangle
+    style: {
+      border-radius: 12
+      font-size: 15
+    }
+  }
+  zone: {
+    style.border-radius: 16
+  }
+  doc: {
+    shape: page
+    style.font-size: 14
+  }
+}
+
+perf: 性能の計測 (bench-remote.mjs・アプリごとに順番に) {
+  class: zone
+  direction: down
+  icon: https://cdn.simpleicons.org/nodedotjs
+
+  s1: "① 初回アクセス\n新しい接続で 2 回" {class: svc}
+  s2: "② 逐次計測\n3 ルート × (準備 10 + 本番 100 回)\nTTFB と完了時間" {class: svc}
+  s3: "③ 負荷計測\nautocannon 50 並列 × 15 秒\n一覧と詳細" {class: svc}
+  s1 -> s2 -> s3
+}
+
+lwf: "Lambda Web Functions\n5 アプリ + data-api" {
+  class: svc
+  icon: https://icons.terrastruct.com/aws%2FCompute%2FAWS-Lambda.svg
+}
+
+cw: "CloudWatch (AWS/Lambda/Web)\nExecutedRequests\nEnvironmentCPUTime (ms)\nEnvironmentActiveTime (ms)" {
+  class: svc
+  icon: https://icons.terrastruct.com/aws%2FManagement%20&%20Governance%2FAmazon-CloudWatch.svg
+}
+
+pricing: "Pricing API (Tokyo・Arm)\nUSD 0.30 / 100 万リクエスト\nUSD 0.0000322421 / vCPU 秒\nUSD 0.0000042688 / GB 秒" {
+  class: svc
+  icon: https://icons.terrastruct.com/aws%2FAWS%20Cost%20Management%2FAWS-Cost-Explorer.svg
+}
+
+cost: 費用の算出 (lwf-cost.mjs) {
+  class: zone
+  icon: https://cdn.simpleicons.org/nodedotjs
+
+  f: "費用 = リクエスト数 × 単価\n+ CPU 秒 × vCPU 単価\n+ 環境の生存秒 × 2 GB × GB 単価" {class: svc}
+}
+
+r1: "results/lwf-*.md / .json\nレイテンシ・RPS・HTML サイズ" {class: doc}
+r2: "results/lwf-cost-*.md / .json\n内訳・CPU ms/リクエスト・100 万あたり" {class: doc}
+
+perf -> lwf: HTTPS
+perf -> r1
+lwf -> cw: 1 分ごとに集計 {style.stroke-dash: 4}
+cw -> cost.f
+pricing -> cost.f
+cost.f -> r2

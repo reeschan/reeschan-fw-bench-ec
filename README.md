@@ -5,6 +5,7 @@ SvelteKit 3 / TanStack Start 1.0 / Next.js 16.4 で同じ EC カタログアプ�
 - 結果のまとめ: [RESULTS.md](RESULTS.md)
 - アプリの仕様: [SPEC.md](SPEC.md)
 - Lambda Web Functions で計測する手順: [LWF-RUN.md](LWF-RUN.md)
+- Lambda Web Functions での検証記事（経緯・方法・結果・費用・CloudFront/WAF）: [docs/lwf/lwf-bench.md](docs/lwf/lwf-bench.md)
 - Lambda Web Functions 用の CDK L2: [reeschan/cdk-lambda-web](https://github.com/reeschan/cdk-lambda-web)
 
 ## 画面
@@ -37,6 +38,17 @@ CDK の L2 は自作の [cdk-lambda-web](https://github.com/reeschan/cdk-lambda-
 
 ![cdk-lambda-web が作るリソース](docs/img/05-cdk-l2.png)
 
+### 計測とコスト算出の流れ（Lambda Web Functions）
+
+`bench-remote.mjs` で速さを測り、`lwf-cost.mjs` が CloudWatch の `AWS/Lambda/Web` メトリクス（リクエスト数・CPU 時間・環境の生存時間）に Pricing API の単価を掛けて費用を出します。
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/lwf/diagrams/measure-flow-dark.svg">
+  <img src="docs/lwf/diagrams/measure-flow-light.svg" alt="bench-remote.mjs が初回アクセス・逐次計測・負荷計測を行い、lwf-cost.mjs が CloudWatch のメトリクスと Pricing API の単価から費用を計算する流れ">
+</picture>
+
+図のソース（D2）は [docs/lwf/diagrams/](docs/lwf/diagrams/) にあります。
+
 ## 構成
 
 ```
@@ -50,7 +62,8 @@ shared/styles.css  全アプリ共通の CSS
 scripts/           ビルドと計測のスクリプト
 docker-compose.yml Node コンテナ計測用（各アプリ cpus=1 / mem 512MB）
 infra-lwf/         Lambda Web Functions へのデプロイ（AWS CDK）
-results/           Node コンテナ計測の生データ
+results/           計測の生データ（run-*: Node コンテナ、lwf-*: Lambda Web Functions、lwf-cost-*: 費用）
+docs/lwf/          Lambda Web Functions での検証記事と図（D2 ソース・SVG）
 ```
 
 data-api の遅延（環境変数で変更可）: 一覧 50ms、商品 50ms、在庫 30ms、おすすめ 300ms。

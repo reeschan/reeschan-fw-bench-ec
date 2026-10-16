@@ -1,0 +1,246 @@
+{
+  "at": "2026-10-16T07:09:40.133Z",
+  "quick": false,
+  "apps": {
+    "sveltekit": {
+      "cold": {
+        "status": 200,
+        "first": 487.9,
+        "firstTtfb": 233.9,
+        "second": 386.3
+      },
+      "detailHtmlGzipKB": 1.9,
+      "routes": {
+        "list": {
+          "ttfbP50": 78.7,
+          "ttfbP95": 99.5,
+          "totalP50": 78.7,
+          "totalP95": 99.6,
+          "non200": 0
+        },
+        "detail": {
+          "ttfbP50": 90.9,
+          "ttfbP95": 101.2,
+          "totalP50": 342,
+          "totalP95": 350.4,
+          "non200": 0
+        },
+        "api": {
+          "ttfbP50": 77.9,
+          "ttfbP95": 92.9,
+          "totalP50": 77.9,
+          "totalP95": 93,
+          "non200": 0
+        }
+      },
+      "load": {
+        "list": {
+          "rps": 677.9,
+          "p50": 72,
+          "p99": 94,
+          "non2xx": 0,
+          "errors": 0
+        },
+        "detail": {
+          "rps": 152.4,
+          "p50": 322,
+          "p99": 467,
+          "non2xx": 0,
+          "errors": 0
+        }
+      }
+    },
+    "tanstack": {
+      "cold": {
+        "status": 200,
+        "first": 471.2,
+        "firstTtfb": 219.4,
+        "second": 386
+      },
+      "detailHtmlGzipKB": 2.8,
+      "routes": {
+        "list": {
+          "ttfbP50": 85.6,
+          "ttfbP95": 101.9,
+          "totalP50": 87.1,
+          "totalP95": 102.9,
+          "non200": 0
+        },
+        "detail": {
+          "ttfbP50": 92.8,
+          "ttfbP95": 102.3,
+          "totalP50": 341.9,
+          "totalP95": 353.8,
+          "non200": 0
+        },
+        "api": {
+          "ttfbP50": 79.9,
+          "ttfbP95": 93.3,
+          "totalP50": 79.9,
+          "totalP95": 93.3,
+          "non200": 0
+        }
+      },
+      "load": {
+        "list": {
+          "rps": 658.6,
+          "p50": 73,
+          "p99": 127,
+          "non2xx": 0,
+          "errors": 0
+        },
+        "detail": {
+          "rps": 150,
+          "p50": 323,
+          "p99": 496,
+          "non2xx": 0,
+          "errors": 0
+        }
+      }
+    },
+    "next": {
+      "cold": {
+        "status": 200,
+        "first": 443.1,
+        "firstTtfb": 185.6,
+        "second": 379.7
+      },
+      "detailHtmlGzipKB": 3.5,
+      "routes": {
+        "list": {
+          "ttfbP50": 84.1,
+          "ttfbP95": 109.7,
+          "totalP50": 84.5,
+          "totalP95": 112.2,
+          "non200": 0
+        },
+        "detail": {
+          "ttfbP50": 99.5,
+          "ttfbP95": 109.6,
+          "totalP50": 348.5,
+          "totalP95": 358.3,
+          "non200": 0
+        },
+        "api": {
+          "ttfbP50": 81.2,
+          "ttfbP95": 109.2,
+          "totalP50": 81.2,
+          "totalP95": 109.2,
+          "non200": 0
+        }
+      },
+      "load": {
+        "list": {
+          "rps": 410.6,
+          "p50": 120,
+          "p99": 179,
+          "non2xx": 0,
+          "errors": 0
+        },
+        "detail": {
+          "rps": 137.5,
+          "p50": 328,
+          "p99": 1552,
+          "non2xx": 0,
+          "errors": 0
+        }
+      }
+    },
+    "next-cc": {
+      "cold": {
+        "status": 200,
+        "first": 434.6,
+        "firstTtfb": 108.5,
+        "second": 387.9
+      },
+      "detailHtmlGzipKB": 4.1,
+      "routes": {
+        "list": {
+          "ttfbP50": 18.4,
+          "ttfbP95": 25.2,
+          "totalP50": 88.5,
+          "totalP95": 114.6,
+          "non200": 0
+        },
+        "detail": {
+          "ttfbP50": 18.7,
+          "ttfbP95": 24.6,
+          "totalP50": 339.8,
+          "totalP95": 358.1,
+          "non200": 0
+        },
+        "api": {
+          "ttfbP50": 75.2,
+          "ttfbP95": 80.7,
+          "totalP50": 120,
+          "totalP95": 130,
+          "non200": 0
+        }
+      },
+      "load": {
+        "list": {
+          "rps": 536.8,
+          "p50": 83,
+          "p99": 431,
+          "non2xx": 0,
+          "errors": 0
+        },
+        "detail": {
+          "rps": 144.7,
+          "p50": 334,
+          "p99": 439,
+          "non2xx": 0,
+          "errors": 1
+        }
+      }
+    },
+    "next-cached": {
+      "cold": {
+        "status": 200,
+        "first": 1383.5,
+        "firstTtfb": 995.4,
+        "second": 102.5
+      },
+      "detailHtmlGzipKB": 4.1,
+      "routes": {
+        "list": {
+          "ttfbP50": 16.1,
+          "ttfbP95": 19.9,
+          "totalP50": 60,
+          "totalP95": 74.1,
+          "non200": 0
+        },
+        "detail": {
+          "ttfbP50": 16,
+          "ttfbP95": 19.9,
+          "totalP50": 61.6,
+          "totalP95": 74.8,
+          "non200": 0
+        },
+        "api": {
+          "ttfbP50": 53.5,
+          "ttfbP95": 56.3,
+          "totalP50": 100.9,
+          "totalP95": 110.1,
+          "non200": 0
+        }
+      },
+      "load": {
+        "list": {
+          "rps": 732.2,
+          "p50": 60,
+          "p99": 282,
+          "non2xx": 0,
+          "errors": 0
+        },
+        "detail": {
+          "rps": 740.5,
+          "p50": 64,
+          "p99": 86,
+          "non2xx": 0,
+          "errors": 0
+        }
+      }
+    }
+  }
+}

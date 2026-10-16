@@ -17,7 +17,7 @@
   "private": true,
   "dependencies": {
     "aws-cdk-lib": "^2.273.0",
-    "cdk-lambda-web": "github:reeschan/cdk-lambda-web",
+    "cdk-lambda-web": "github:reeschan/cdk-lambda-web#18ae74b",
     "constructs": "^10.8.1"
   },
   "devDependencies": {
