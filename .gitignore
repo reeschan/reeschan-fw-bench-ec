@@ -1,0 +1,10 @@
+node_modules
+.svelte-kit
+build
+.output
+.next
+.nitro
+.tanstack
+dist-lwf
+cdk.out
+outputs.json

@@ -1,0 +1,224 @@
+{
+  "quick": false,
+  "results": {
+    "sveltekit": {
+      "idle_mem_mib": 20.5,
+      "ttfb": {
+        "list": {
+          "ttfb_p50": 57.3,
+          "ttfb_p95": 60.5,
+          "total_p50": 57.4,
+          "total_p95": 60.5,
+          "html_bytes": 9885
+        },
+        "detail": {
+          "ttfb_p50": 57,
+          "ttfb_p95": 60.2,
+          "total_p50": 306.3,
+          "total_p95": 308.9,
+          "html_bytes": 6225
+        },
+        "api": {
+          "ttfb_p50": 55.2,
+          "ttfb_p95": 56.9,
+          "total_p50": 55.2,
+          "total_p95": 57,
+          "html_bytes": 918
+        }
+      },
+      "js": {
+        "list": {
+          "js_files": 10,
+          "js_kb": 88.1,
+          "js_gzip_kb": 34.3,
+          "html_kb": 9.6,
+          "html_gzip_kb": 2.2,
+          "inline_script_kb": 4.1
+        },
+        "detail": {
+          "js_files": 10,
+          "js_kb": 89.1,
+          "js_gzip_kb": 34.8,
+          "html_kb": 6.1,
+          "html_gzip_kb": 1.9,
+          "inline_script_kb": 3.2
+        }
+      },
+      "load": {
+        "list": {
+          "rps": 255.4,
+          "lat_p50": 190,
+          "lat_p99": 304,
+          "errors": 0,
+          "peak_mem_mib": 48.7
+        },
+        "detail": {
+          "rps": 153.6,
+          "lat_p50": 315,
+          "lat_p99": 483,
+          "errors": 0,
+          "peak_mem_mib": 53.5
+        },
+        "api": {
+          "rps": 454.1,
+          "lat_p50": 104,
+          "lat_p99": 183,
+          "errors": 0,
+          "peak_mem_mib": 53.2
+        }
+      },
+      "cold": {
+        "start_to_first_200_p50": 900.7,
+        "start_to_first_200_max": 984.2,
+        "first_request_total": 341.1,
+        "second_request_total": 312.3
+      }
+    },
+    "tanstack": {
+      "idle_mem_mib": 22.9,
+      "ttfb": {
+        "list": {
+          "ttfb_p50": 59.3,
+          "ttfb_p95": 63.2,
+          "total_p50": 59.4,
+          "total_p95": 63.2,
+          "html_bytes": 10978
+        },
+        "detail": {
+          "ttfb_p50": 58.3,
+          "ttfb_p95": 61.7,
+          "total_p50": 307.3,
+          "total_p95": 311.8,
+          "html_bytes": 8139
+        },
+        "api": {
+          "ttfb_p50": 55.4,
+          "ttfb_p95": 57.5,
+          "total_p50": 55.4,
+          "total_p95": 57.6,
+          "html_bytes": 919
+        }
+      },
+      "js": {
+        "list": {
+          "js_files": 2,
+          "js_kb": 337.6,
+          "js_gzip_kb": 107.7,
+          "html_kb": 10.6,
+          "html_gzip_kb": 2.7,
+          "inline_script_kb": 5.2
+        },
+        "detail": {
+          "js_files": 2,
+          "js_kb": 338.5,
+          "js_gzip_kb": 107.9,
+          "html_kb": 7.9,
+          "html_gzip_kb": 2.8,
+          "inline_script_kb": 4.9
+        }
+      },
+      "load": {
+        "list": {
+          "rps": 181.5,
+          "lat_p50": 268,
+          "lat_p99": 401,
+          "errors": 0,
+          "peak_mem_mib": 55.9
+        },
+        "detail": {
+          "rps": 109.4,
+          "lat_p50": 440,
+          "lat_p99": 723,
+          "errors": 0,
+          "peak_mem_mib": 63.2
+        },
+        "api": {
+          "rps": 409.5,
+          "lat_p50": 109,
+          "lat_p99": 205,
+          "errors": 0,
+          "peak_mem_mib": 63.3
+        }
+      },
+      "cold": {
+        "start_to_first_200_p50": 921.7,
+        "start_to_first_200_max": 978.8,
+        "first_request_total": 427.4,
+        "second_request_total": 313.8
+      }
+    },
+    "next": {
+      "idle_mem_mib": 41.7,
+      "ttfb": {
+        "list": {
+          "ttfb_p50": 67.5,
+          "ttfb_p95": 74.7,
+          "total_p50": 67.7,
+          "total_p95": 74.8,
+          "html_bytes": 19756
+        },
+        "detail": {
+          "ttfb_p50": 66.3,
+          "ttfb_p95": 72.8,
+          "total_p50": 315,
+          "total_p95": 320.2,
+          "html_bytes": 14136
+        },
+        "api": {
+          "ttfb_p50": 57.9,
+          "ttfb_p95": 61.7,
+          "total_p50": 58,
+          "total_p95": 61.8,
+          "html_bytes": 919
+        }
+      },
+      "js": {
+        "list": {
+          "js_files": 7,
+          "js_kb": 562.7,
+          "js_gzip_kb": 173.6,
+          "html_kb": 19.1,
+          "html_gzip_kb": 3.4,
+          "inline_script_kb": 13.3
+        },
+        "detail": {
+          "js_files": 8,
+          "js_kb": 563.4,
+          "js_gzip_kb": 174,
+          "html_kb": 13.8,
+          "html_gzip_kb": 3.5,
+          "inline_script_kb": 10.2
+        }
+      },
+      "load": {
+        "list": {
+          "rps": 50.1,
+          "lat_p50": 891,
+          "lat_p99": 4246,
+          "errors": 0,
+          "peak_mem_mib": 137.9
+        },
+        "detail": {
+          "rps": 41.2,
+          "lat_p50": 1202,
+          "lat_p99": 4544,
+          "errors": 0,
+          "peak_mem_mib": 201
+        },
+        "api": {
+          "rps": 135.4,
+          "lat_p50": 267,
+          "lat_p99": 948,
+          "errors": 0,
+          "peak_mem_mib": 223
+        }
+      },
+      "cold": {
+        "start_to_first_200_p50": 1554.7,
+        "start_to_first_200_max": 1690.6,
+        "first_request_total": 810.2,
+        "second_request_total": 331.7
+      }
+    }
+  }
+}

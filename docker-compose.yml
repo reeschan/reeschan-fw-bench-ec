@@ -1,0 +1,33 @@
+# Each app gets the same CPU / memory budget. Run one app at a time when measuring (see scripts/run-all.sh).
+x-app: &app
+  cpus: 1
+  mem_limit: 512m
+  environment:
+    DATA_API_URL: http://data-api:4000
+  depends_on: [data-api]
+
+services:
+  data-api:
+    build: ./data-api
+    cpus: 1
+    ports: ["4000:4000"]
+  sveltekit:
+    <<: *app
+    build: ./apps/sveltekit
+    ports: ["3001:3000"]
+  tanstack:
+    <<: *app
+    build: ./apps/tanstack
+    ports: ["3002:3000"]
+  next:
+    <<: *app
+    build: ./apps/next
+    ports: ["3003:3000"]
+  next-cc:
+    <<: *app
+    build: ./apps/next-cc
+    ports: ["3004:3000"]
+  next-cached:
+    <<: *app
+    build: ./apps/next-cached
+    ports: ["3005:3000"]

@@ -1,0 +1,5 @@
+sveltekit 4.965071271
+tanstack 3.068136723
+next 8.005276086
+next-cc 8.348252165
+next-cached 8.882174017

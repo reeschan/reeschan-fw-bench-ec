@@ -1,0 +1,27 @@
+{
+  "name": "sveltekit",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "dev": "vite dev",
+    "build": "vite build",
+    "start": "node build"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@sveltejs/adapter-node": "^6.0.0",
+    "@sveltejs/kit": "^3.0.1",
+    "@sveltejs/vite-plugin-svelte": "^7.3.1",
+    "svelte": "^5.57.2",
+    "typescript": "^6.0.3",
+    "vite": "^8.3.4"
+  },
+  "type": "module",
+  "private": true,
+  "imports": {
+    "#lib/*": "./src/lib/*"
+  }
+}

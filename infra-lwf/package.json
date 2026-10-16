@@ -1,0 +1,29 @@
+{
+  "name": "infra-lwf",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "directories": {
+    "lib": "lib"
+  },
+  "scripts": {
+    "synth": "cdk synth",
+    "deploy": "cdk deploy --require-approval never --outputs-file outputs.json",
+    "destroy": "cdk destroy --force"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "private": true,
+  "dependencies": {
+    "aws-cdk-lib": "^2.273.0",
+    "cdk-lambda-web": "github:reeschan/cdk-lambda-web",
+    "constructs": "^10.8.1"
+  },
+  "devDependencies": {
+    "@types/node": "^26.6.5",
+    "aws-cdk": "^2.1145.0",
+    "tsx": "^4.23.15",
+    "typescript": "^5.9.3"
+  }
+}
