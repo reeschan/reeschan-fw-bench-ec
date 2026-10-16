@@ -1,4 +1,4 @@
-# fw-bench-ec
+# reeschan-fw-bench-ec
 
 SvelteKit 3 / TanStack Start 1.0 / Next.js 16.4 で同じ EC カタログアプリを作り、Node コンテナと AWS Lambda Web Functions で性能とコストを比べたときのコード一式です。
 
