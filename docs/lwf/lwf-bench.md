@@ -11,7 +11,21 @@
 - **動かし方**: 2026-10-12 に発表された Lambda の新機能 **Lambda Web Functions** に、同じ EC カタログ画面を 5 通り (SvelteKit 3 / TanStack Start / Next.js 16.4 の素・cacheComponents・キャッシュ有り) で載せた。どれも **アダプター無し** で、数行の入口ファイルを足すだけで普通の Node サーバーのまま動いた。
 - ただし今回の費用の **約 9 割はメモリ** だった。Web Functions は環境 (2 vCPU / 2 GB) が生きている間ずっとメモリが課金され、負荷をかけると環境が 50〜60 個に増え、止めてからも 6 分以上残る。短いバースト負荷の費用は「何個の環境がどれだけ生きたか」でほぼ決まる。
 - 計測全体の費用は約 0.96 ドル。
+- **守り**: 本番では CloudFront を前に置き、エンドポイントを CloudFront からしか呼べないようにできる。WAF を付ければ IP 制限・レート制限・攻撃対策をアプリの外で持てる。
 - 自作の CDK L2 (`cdk-lambda-web`) の初の実デプロイで、S3 key に prefix が付かない不具合を 1 件見つけて回避した。
+
+## 目次
+
+1. [この記事の用語](#この記事の用語)
+2. [経緯](#経緯)
+3. [Lambda Web Functions は従来の Lambda と何が違うか](#lambda-web-functions-は従来の-lambda-と何が違うか)
+4. [登場するフレームワークの注目点](#登場するフレームワークの注目点)
+5. [検証用アプリ「Bench Store」](#検証用アプリbench-store)
+6. [検証環境と方法](#検証環境と方法)
+7. [検証結果](#検証結果) (速さ・費用・自作 L2 で見つかったこと)
+8. [Lambda Web Functions を選ぶ理由](#lambda-web-functions-を選ぶ理由) (費用・守り)
+9. [考察とこれから](#考察とこれから)
+10. [計測の注意点](#計測の注意点)
 
 ## この記事の用語
 
@@ -39,7 +53,7 @@
 
 ## Lambda Web Functions は従来の Lambda と何が違うか
 
-Web アプリは、これまでの Lambda (今は「Lambda Event Functions」と呼ばれる) でも動かせた。Function URL や API Gateway の後ろに置き、Lambda Web Adapter や各フレームワークの Lambda 用アダプター (OpenNext など) で「HTTP リクエスト ⇔ Lambda のイベント」を変換する形だ。静的なページだけなら、S3 + CloudFront で配るのが今も定番。Web Functions で変わったのは、**SSR のような「動的に HTML を作るサーバー」の載せ方**。
+Web アプリは、これまでの Lambda (今は「Lambda Event Functions」と呼ばれる。[AWS のローンチブログ](https://aws.amazon.com/blogs/aws/announcing-aws-lambda-web-functions-for-fast-consistent-web-app-performance-anywhere/)) でも動かせた。Function URL や API Gateway の後ろに置き、Lambda Web Adapter や各フレームワークの Lambda 用アダプター (OpenNext など) で「HTTP リクエスト ⇔ Lambda のイベント」を変換する形だ。静的なページだけなら、S3 + CloudFront で配るのが今も定番。Web Functions で変わったのは、**SSR のような「動的に HTML を作るサーバー」の載せ方**。
 
 | | Event Functions (従来の Lambda) | Web Functions |
 |---|---|---|
@@ -47,9 +61,9 @@ Web アプリは、これまでの Lambda (今は「Lambda Event Functions」と
 | 1 環境の同時処理 | 1 リクエストずつ | 1 環境で最大 128 リクエストを同時に処理 (既定の上限は 64 とされる) |
 | 課金 | 実行時間 × メモリ (I/O 待ちの時間も課金) | 使った CPU 時間 + 環境が生きている間のメモリ。DB や API の待ち時間はほぼ課金されない |
 | 入口 | Function URL や API Gateway を別に用意 | HTTPS のエンドポイントが付いてくる。Revision ごとのトラフィック配分や、複数リージョンの global エンドポイントもある |
-| ストリーミング | 専用の書き方 (レスポンスストリーミング) が要る | 普通のサーバーの書き方のまま動く |
+| ストリーミング | Node.js のマネージドランタイムで、レスポンスストリーミング用の書き方 (`streamifyResponse`) にし、Function URL・`InvokeWithResponseStream`・API Gateway のプロキシ統合のどれかから呼ぶ必要がある ([ドキュメント](https://docs.aws.amazon.com/lambda/latest/dg/configuration-response-streaming.html)) | 普通のサーバーの書き方のまま、設定なしで動く |
 
-今回のように「待ち時間が長く、CPU はあまり使わない」画面 (API や DB を待つ SSR) ほど、同時処理と CPU 課金の効果が大きい。Lambda Web Adapter の README も、新しく作る Node.js の Web アプリには Web Functions を勧めている。
+今回のように「待ち時間が長く、CPU はあまり使わない」画面 (API や DB を待つ SSR) ほど、同時処理と CPU 課金の効果が大きい。[Lambda Web Adapter の README](https://github.com/aws/aws-lambda-web-adapter) も、新しく作る Node.js の Web アプリには Web Functions を勧めている。
 
 ## 登場するフレームワークの注目点
 
@@ -62,6 +76,8 @@ Web アプリは、これまでの Lambda (今は「Lambda Event Functions」と
 - 期待されていた remote functions はまだ実験的な扱い (Async Svelte の実験フラグが要る)。今回は使っていない。
 - 移行は `npx sv migrate sveltekit-3` でおおむね自動。
 
+出典: [SvelteKit 3 is here (svelte.dev)](https://svelte.dev/blog/sveltekit-3-is-here)、[SvelteKit 3 on Netlify](https://www.netlify.com/changelog/2026-10-01-sveltekit-3/)
+
 ### TanStack Start 1.0 (2026-10-13 安定版)
 
 - **型付きのサーバー関数** (`createServerFn`)。ローダーやイベントハンドラーから普通の関数のように呼べる。今回のアプリもデータ取得はこれで書いた。
@@ -71,6 +87,8 @@ Web アプリは、これまでの Lambda (今は「Lambda Event Functions」と
 - デプロイは独自アダプターをやめて **Vite + Nitro** に乗った。今回 `.output/server/index.mjs` をそのまま Web Functions で動かせたのはこのため。
 - React Server Components にも対応しているが、必須ではない。
 
+出典: [TanStack Start 1.0 is Stable](https://tanstack.com/blog/tanstack-start-1-0)
+
 ### Next.js 16 の Cache Components (`cacheComponents`)
 
 この記事の **next-cc** と **next-cached** は、この設定を有効にした版。
@@ -79,6 +97,8 @@ Web アプリは、これまでの Lambda (今は「Lambda Event Functions」と
 - データ取得は **既定では毎回 (動的)**。キャッシュしたい関数やコンポーネントにだけ `"use cache"` を付け、`cacheLife()` で寿命を、`cacheTag()` で無効化用のタグを決める。
 - **Partial Prerendering (PPR)** が既定の動きになる。動かない部分 (ヘッダーや枠) を **静的な外枠** として先に返し、データが要る部分は `<Suspense>` の中身として後からストリーミングする。next-cc の TTFB が 18ms と極端に短いのはこのため。
 - `"use cache"` の結果は、既定では **各サーバーのメモリ (LRU)** に置かれる。Lambda Web Functions では環境ごとにメモリが別なので、新しく立ち上がった環境では最初はキャッシュに当たらない。環境をまたいで共有したいなら `"use cache: remote"` と外部のキャッシュハンドラーが要る。
+
+出典: [Next.js ドキュメント: cacheComponents](https://nextjs.org/docs/app/api-reference/config/next-config-js/cacheComponents)、[use cache](https://nextjs.org/docs/app/api-reference/directives/use-cache)
 
 ## 検証用アプリ「Bench Store」
 
@@ -170,7 +190,7 @@ data-api は 1,000 件の商品をシード付き乱数で作るので、どの�
 - **詳細ページの完了 (約 340ms) は、ほぼ疑似 API の「おすすめ 300ms」の待ち**。TTFB が約 90ms なので、どのフレームワークもストリーミングで先に画面の上半分を返せている。
 - **next-cc の TTFB が 18ms と極端に短い** のは、cacheComponents で静的な外枠を先に返し、データ部分を後から流すため。完了時間は他と同じ。
 - **詳細ページの RPS (138〜152) が横並びなのは、計測方法の上限に張り付いているため**。50 接続がそれぞれ約 330ms の応答を待つので、上限はおよそ 50 ÷ 0.33 秒 ≈ 150 RPS になる。この計測では、詳細ページの RPS にはフレームワークの差が出ようがない。next-cached の 741 も同じで、キャッシュで 1 回の応答が約 64ms と短いぶん上限が高いだけ (50 ÷ 0.064 ≈ 780)。
-- **差が見えるのは一覧ページ**。負荷をかけると、SvelteKit / TanStack の応答 p50 は逐次のときとほぼ同じ (72〜73ms) だが、素の Next.js は 85ms → 120ms に伸びた。RPS の差 (678 と 411) は、この応答時間の伸びがそのまま表れたもの。1 リクエストあたりの CPU 時間の差 (費用の節) と同じ向き。
+- **差が見えるのは一覧ページ**。負荷をかけると、SvelteKit / TanStack の応答 p50 は逐次のときとほぼ同じ (72〜73ms) だが、素の Next.js は逐次計測の p50 (85ms) から負荷時の p50 (120ms) に伸びた。RPS の差 (678 と 411) は、この応答時間の伸びがそのまま表れたもの。1 リクエストあたりの CPU 時間の差 (費用の節) と同じ向き。
 - **素の Next.js は詳細の p99 が 1,552ms に跳ねた** が、next-cc は 439ms と SvelteKit / TanStack 並みだった。原因は切り分けていない。負荷の途中で新しい環境が立ち上がり、その起動待ち (Next.js は初回起動が 2.6 秒と重い) に当たったリクエストが p99 に出た可能性がある (推定)。1 回の計測なので、たまたまの可能性もある。
 - 成果物の大きさは Next.js が約 17 MB / 1,200 ファイル、SvelteKit / TanStack は 1.3〜1.4 MB。初回起動の差 (Next.js 2.6 秒) はこれが効いていると見ている (推定)。
 
@@ -198,11 +218,13 @@ data-api は 1,000 件の商品をシード付き乱数で作るので、どの�
 
 ## Lambda Web Functions を選ぶ理由
 
+> この節は今回の計測ではなく、公式の料金表とドキュメントにもとづく一般的な比較です。
+
 ### 費用: 無料ではないが、リクエストあたりは安い
 
 Vercel の Hobby のように **無料で始められるホスティング** と比べると、Web Functions には無料枠が見当たらず (今回は確認できなかった)、少しはお金がかかる。ただし Vercel の Hobby は個人の非商用に限られ、関数の呼び出しは月 100 万回まで。商用なら Pro (月 20 ドル〜 + 従量課金) になる。
 
-単価を比べると次のとおり (Vercel は料金ページの「〜から」の値。リージョンによって高くなる)。
+単価を比べると次のとおり (Vercel は料金ページの「〜から」の値。リージョンによって高くなる)。出典: [Lambda の料金](https://aws.amazon.com/lambda/pricing/) と AWS Pricing API (東京の単価)、[Vercel の料金](https://vercel.com/pricing)、[CloudFront の料金](https://aws.amazon.com/cloudfront/pricing/)。
 
 | | Lambda Web Functions (東京) | Vercel Pro (Fluid compute) |
 |---|---|---|
@@ -212,7 +234,7 @@ Vercel の Hobby のように **無料で始められるホスティング** と
 | メモリ | 0.0154 ドル / GB 時間 (1 環境 2 GB 固定) | 0.0106 ドル / GB 時間〜 |
 
 - **リクエストあたりは安い**。リクエスト単価は半分、CPU 単価も少し安い。今回の SvelteKit (CPU 5.7ms / リクエスト) なら、100 万リクエストあたりの限界費用は約 0.48 ドル。
-- **メモリの単価は Vercel のほうが安い** ので、ここは正直に書いておく。今回の計測のように、短い負荷で環境が一気に増えると、費用の大半がメモリになる。アクセスが少なく波の小さいサイトほど、Web Functions の「待ち時間は課金しない・リクエストが安い」が効く。
+- **メモリの単価は Vercel のほうが安い** ので、ここは正直に書いておく。リクエストと CPU の分は得をするが、環境が生きている間のメモリ代はそれとは別にかかる。今回の計測のように、短い負荷で環境が一気に増えると、費用の大半がメモリになる。アクセスが少なく波の小さいサイトほど、Web Functions の「待ち時間は課金しない・リクエストが安い」が効く。
 - CloudFront を前に置く場合も、CloudFront の定額プランに Free (月 0 ドル、100 万リクエスト・100 GB まで) と Pro (月 15 ドル、1,000 万リクエスト) がある。超過しても追加料金は取られない。
 
 ### 守り: CloudFront を前に置けば、アプリに守りのロジックを書かなくて済む
@@ -224,7 +246,7 @@ Web Functions のエンドポイントは、そのままだとインターネッ
 - CloudFront に **AWS WAF** を付ければ、**IP アドレスの許可・拒否リスト、一定時間内のリクエスト数の制限 (レート制限)、SQL インジェクションなどの典型的な攻撃や bot を弾く AWS 管理のルール** を、アプリのコードの外で設定できる。CloudFront の定額プランには WAF のルールも含まれる (Free で 5 個、Pro で 25 個)。
 - つまり、IP フィルターやレート制限を **アプリ側のロジックとして持たなくてよい**。アプリは画面と業務の処理に集中できる。
 
-設定のときの注意 (CloudFront のドキュメントより):
+設定のときの注意 ([CloudFront 開発者ガイド「Restrict access to an AWS Lambda Web Function origin」](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/private-content-restricting-access-to-lambda-web.html) より):
 
 - CloudFront から送る `Host` ヘッダーは CloudFront のドメインではなく、エンドポイントのドメインにする必要がある (管理ポリシーなら `AllViewer` ではなく `AllViewerExceptHostHeader`)。そうしないと 404 になる。
 - OAC を使う場合、そのキャッシュビヘイビアには Lambda@Edge のオリジン向けトリガーを付けられない。
